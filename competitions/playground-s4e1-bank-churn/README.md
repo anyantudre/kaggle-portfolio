@@ -1,151 +1,65 @@
-# Bank Churn Prediction ML App
+# Bank Churn Prediction
 
-The main goal of this project is **to predict whether a customer continues with their account or closes it (e.g., churns).** 
-It is the 1st episode of Kaggle Playground Series - Season 4.
+[![Open in Kaggle](https://kaggle.com/static/images/open-in-kaggle.svg)](https://www.kaggle.com/code/waalbannyantudre/ps4-ep1-bank-churn-eda-catboost-baseline)
 
-![](media/kaggle_comp_page.jpg) 
+Predicting whether a bank customer will close their account, with an ensemble of gradient-boosted trees served in a Streamlit app.
 
+<p align="center">
+  <img src="media/app1.png" alt="Streamlit app: customer details form" width="45%">
+  &nbsp;
+  <img src="media/app2.png" alt="Streamlit app: predicted churn probability" width="45%">
+</p>
 
-- **App Link:** [Bank Churn Prediction ML App](https://anyantudre-binary-classification-with-a-bank-churn-dataset.streamlit.app/)  
+## The competition
 
-- **Evaluation Metric:**
-The evaluation metric is **area under the ROC curve** between the predicted probability and the observed target  
+[Binary Classification with a Bank Churn Dataset](https://www.kaggle.com/competitions/playground-series-s4e1), episode 1 of season 4 of the Kaggle Playground Series (January 2024). Each customer has a credit score, country, gender, age, tenure, balance, number of products, card and activity flags and an estimated salary; submissions are scored with the area under the ROC curve (AUC). The data was generated from the [Bank Customer Churn](https://www.kaggle.com/datasets/shubhammeshram579/bank-customer-churn-prediction) dataset.
 
-- **App Demo Screenshot:**   
-![](media/app1.png)
-![](media/app2.png)
+## Approach
 
+- 5-fold stratified cross-validation (`src/create_folds.py`).
+- Five tree-based models: XGBoost, LightGBM, CatBoost, HistGradientBoosting and GradientBoosting (`src/model_dispatcher.py`), with a target-encoding variant (`src/train_target_encoding.py`).
+- Hyperparameter search for HistGradientBoosting (`src/hist_grid_searchCV.py`).
+- An average of the five models over the five folds (`src/inference.py`), also used by the Streamlit app (`app.py`).
 
-## Tech Stack
+I published a [CatBoost baseline notebook](https://www.kaggle.com/code/waalbannyantudre/ps4-ep1-bank-churn-eda-catboost-baseline) early in the competition; the [winning solution](https://www.kaggle.com/competitions/playground-series-s4e1/discussion/472502) also relied on CatBoost alone.
 
-- **Data Visualization & Manipulation:** matplotlib, seaborn, numpy & pandas.  
-- **Model Building:** scikit-learn, xgboost, lightgbm & catboost.   
-- **Deployment:** joblib & streamlit.     
-- **Versionning & Others:** Git, Github, VSCode, os & argparse.   
+<p align="center">
+  <img src="media/feature-importance.png" alt="CatBoost feature importance" width="600">
+</p>
 
+## Results
 
-## Data sources
+| Leaderboard | AUC |
+|---|---|
+| Public | 0.88666 |
+| Private | 0.88938 |
 
- - [Competition Dataset:](https://www.kaggle.com/competitions/playground-series-s4e1/data)
- The dataset for this competition (both train and test) was generated from a deep learning model trained on the Bank Customer Churn Prediction dataset. Feature distributions are close to, but not exactly the same, as the original.
+## Files
 
+| Path | Content |
+|---|---|
+| `notebooks/` | data exploration and the CatBoost baseline notebook |
+| `src/` | folds, training, target encoding, tuning and inference scripts |
+| `output/` | submission files |
+| `app.py` | the Streamlit app |
+| `media/` | images for this README |
 
- - [Original Dataset:](https://www.kaggle.com/datasets/shubhammeshram579/bank-customer-churn-prediction)
- The bank customer churn dataset is a commonly used dataset for predicting customer churn in the banking industry. It contains information on bank customers who either left the bank or continue to be a customer. The dataset includes the following attributes:
+The competition data (`input/`) and the trained models (`models/`) are not included.
 
-| Column name             | Description                                                                |
-| ----------------- | ------------------------------------------------------------------ |
-| Customer ID | A unique identifier for each customer |
-| Surname | The customer's surname or last name |
-| Credit Score | A numerical value representing the customer's credit score |
-| Geography | The country where the customer resides (France, Spain or Germany) |
-| Gender | The customer's gender (Male or Female) |
-| Age | The customer's age |
-| Tenure | The number of years the customer has been with the bank |
-| Balance | The customer's account balance |
-| NumOfProducts | The number of bank products the customer uses (e.g., savings account, credit card) |
-| HasCrCard | Whether the customer has a credit card (1 = yes, 0 = no) |
-| IsActiveMember | Whether the customer is an active member (1 = yes, 0 = no) |
-| EstimatedSalary | The estimated salary of the customer |
-| Exited | Whether the customer has churned (1 = yes, 0 = no) |
-
-## Code Structure
-
-- **Screenshot:**  
-
-![](media/project_structure.jpg)
-
-- **Description:**
-
-| folders             | Description                                                                |
-| ----------------- | ------------------------------------------------------------------ |
-| input/ | consists of all the input files and data for the project (train, test, original, sample_submission) |
-| media/ | only contains images for the README.md file |
-| models/ | keeps all the trained models saved with joblib. |
-| notebooks/ | all jupyter notebooks (i.e. any *.ipynb file) are stored in the notebooks folder |
-| output/ | contains all the models predictions(i.e submissions to the competition) |
-| src/ | contains all the python scripts(i.e. any *.py file) as well as a bash script (i.e. run.sh file) to automate model training process |
-| README.md | markdown file where I described the project. It's what you're reading right now |
-| app.py | python file for streamlit deployement |
-| requirements.txt | contains all the packages neede by the project to run and their versions|
-
-
-## Results and evaluation
-
-
-- **My Approach:** Firstly I setted up a local 5 fold cross validation using the create_folds.py file. 
-Then, I tried five tree-based models (eg. xgboost, lightgbm, catboost, gbm and histgbm) and then I ensemble the predictions on a weigthwed averave.
-I tried different Feature Engineering methods but looked like they didn't improve too much the score. 
-As I didn't have too much time for this competition I only tuned some hyperparameters of the histgbm model using RandomizedSearchCV.   
-
-What's more, it seems that the winner actually used only CatBoost, and I'm happy about that (I can even brag about it) 
-because I was probably the first to publish a public notebook on Catboost baseline at the beginning of the competition. 
-
-
-- Here is the link to my first notebook about Catboost baselise[[PS4-EP1] Bank Churn | EDA📊 + CatBoost baseline🦾](https://www.kaggle.com/code/waalbannyantudre/ps4-ep1-bank-churn-eda-catboost-baseline)
-I also added it to the notebooks/ folder.
-
-
-- **[First place solution wrappup:](https://www.kaggle.com/competitions/playground-series-s4e1/discussion/472502)**
-  1. It was important to recognize that CustomerId and Surname are high-cardinality categorical variables and encode them correctly.
-  2. Catboost was enough to win this competition. My final submission was based on one Catboost model averaged across 20 folds.
-  3. If you tuned Catboost parameters well you would be in Top 3. There're a lot of parameters to tune and there are many ways to encode categorical features. I now realize that my 1st place solution can be improved even further.
-
-
-- **My Kaggle Leaderboard results:**
-    - Public  LB AUC score : 0.88666
-    - Private LB AUC score : 0.88938
-    - LB rank : Although I didn't commit 100% to this competition, I finished 1101 out of 3633 participants (Top 30%). I'm sure I'll do better in future Playgroud series :)
-
-
-
-## How to Run this Project Locally?
-
-1. First fork the repo to your GitHub account
-
-2. Clone the project
+## Run it
 
 ```bash
-  git clone https://github.com/ANYANTUDRE/Binary-Classification-with-a-Bank-Churn-Dataset
+git clone https://github.com/anyantudre/Kaggle
+cd Kaggle/competitions/playground-s4e1-bank-churn
+pip install -r requirements.txt
 ```
 
-3. Go to the project directory
+Download `train.csv`, `test.csv` and `sample_submission.csv` from the [competition page](https://www.kaggle.com/competitions/playground-series-s4e1/data) into an `input/` folder. Then train the five models the app uses on each fold and start the app:
 
 ```bash
-  cd Binary-Classification-with-a-Bank-Churn-Dataset
+cd src
+python create_folds.py
+for m in hist cat gbm lgbm xgb; do for f in 0 1 2 3 4; do python train.py --fold $f --model $m; done; done
+cd ..
+streamlit run app.py
 ```
-
-4. Install dependencies
-
-```bash
-  pip intall requirements.txt
-```
-
-5. Start the server
-
-```bash
-  streamlit run app.py
-```
-
-
-## Contributing
-
-All kind of contributions are always welcome!
-
-
-## Authors
-
-- [@anyantudre](https://github.com/ANYANTUDRE)
-
-
-## License
-
-- **Competition Dataset:**  
-@misc{playground-series-s4e1,  
-    author = {Walter Reade, Ashley Chow},  
-    title = {Binary Classification with a Bank Churn Dataset },  
-    publisher = {Kaggle},  
-    year = {2024},  
-    url = {https://kaggle.com/competitions/playground-series-s4e1}  
-}
-
