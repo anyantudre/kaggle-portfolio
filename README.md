@@ -1,4 +1,4 @@
-# Kaggle
+# Kaggle Portfolio
 
 [![Kaggle profile](https://img.shields.io/badge/Kaggle-waalbannyantudre-20BEFF?logo=kaggle&logoColor=white)](https://www.kaggle.com/waalbannyantudre)
 

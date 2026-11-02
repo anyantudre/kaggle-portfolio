@@ -49,8 +49,8 @@ The competition data (`input/`) and the trained models (`models/`) are not inclu
 ## Run it
 
 ```bash
-git clone https://github.com/anyantudre/Kaggle
-cd Kaggle/competitions/playground-s4e1-bank-churn
+git clone https://github.com/anyantudre/kaggle-portfolio
+cd kaggle-portfolio/competitions/playground-s4e1-bank-churn
 pip install -r requirements.txt
 ```
 
